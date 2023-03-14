@@ -33,7 +33,6 @@ const runServerNative = async () => {
       const id = parseInt(url.split("/")[2]);
       const contactIndex = contacts.findIndex((contact) => contact.id === id);
       if (method === "DELETE" && contactIndex > -1) {
-        console.log(contactIndex);
         contacts.splice(contactIndex, 1);
         response.statusCode = 200;
         return response.end(
