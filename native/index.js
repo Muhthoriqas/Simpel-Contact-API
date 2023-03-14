@@ -32,8 +32,8 @@ const runServerNative = async () => {
     if (url.startsWith("/contacts/")) {
       const id = parseInt(url.split("/")[2]);
       const contactIndex = contacts.findIndex((contact) => contact.id === id);
-      const contact = contacts[contactIndex];
       if (method === "DELETE" && contactIndex > -1) {
+        console.log(contactIndex);
         contacts.splice(contactIndex, 1);
         response.statusCode = 200;
         return response.end(
