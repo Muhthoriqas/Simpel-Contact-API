@@ -1,7 +1,7 @@
 const Hapi = require("@hapi/hapi");
 const contacts = require("./contacts");
 
-(async () => {
+const runServerHapi = async () => {
   const server = Hapi.server({
     port: 3000,
     host: "localhost",
@@ -15,16 +15,16 @@ const contacts = require("./contacts");
         const { name, email, phone } = request.payload;
         const id = contacts[contacts.length - 1].id + 1;
 
-        contacts.push({
+        const newContact = {
           id,
           name,
           email,
           phone,
-        });
+        };
 
-        const response = h.response({ message: "Contact added successfully" });
-        response.code(201);
-        return response;
+        contacts.push(newContact);
+
+        return h.response({ message: "Contact added successfully" }).code(201);
       },
     },
     {
@@ -42,9 +42,7 @@ const contacts = require("./contacts");
         );
 
         if (index === -1) {
-          const response = h.response({ message: "Contact not found" });
-          response.code(404);
-          return response;
+          return h.response({ message: "Contact not found" }).code(404);
         }
 
         contacts.splice(index, 1);
@@ -56,4 +54,6 @@ const contacts = require("./contacts");
 
   await server.start();
   console.log("Server running on %s", server.info.uri);
-})();
+};
+
+runServerHapi();

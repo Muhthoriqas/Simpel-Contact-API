@@ -1,7 +1,7 @@
 const http = require("http");
 const contacts = require("./contacts");
 
-(async () => {
+const runServerNative = async () => {
   const server = http.createServer(async (request, response) => {
     response.setHeader("Content-Type", "application/json");
 
@@ -49,4 +49,6 @@ const contacts = require("./contacts");
   server.listen(3000, "localhost", () => {
     console.log("Server running on http://localhost:3000");
   });
-})();
+};
+
+runServerNative();
