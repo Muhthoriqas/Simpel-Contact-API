@@ -1,16 +1,16 @@
-const Hapi = require('@hapi/hapi');
+const Hapi = require("@hapi/hapi");
 const contacts = require("./contacts");
 
 (async () => {
   const server = Hapi.server({
     port: 3000,
-    host: 'localhost',
+    host: "localhost",
   });
 
   server.route([
     {
-      method: 'POST',
-      path: '/contacts',
+      method: "POST",
+      path: "/contacts",
       handler: (request, h) => {
         const { name, email, phone } = request.payload;
         const id = contacts[contacts.length - 1].id + 1;
@@ -19,39 +19,41 @@ const contacts = require("./contacts");
           id,
           name,
           email,
-          phone
+          phone,
         });
 
-        const response = h.response({ message: 'Contact added successfully' });
+        const response = h.response({ message: "Contact added successfully" });
         response.code(201);
         return response;
       },
     },
     {
-      method: 'GET',
-      path: '/contacts',
+      method: "GET",
+      path: "/contacts",
       handler: () => contacts,
     },
     {
-      method: 'DELETE',
-      path: '/contacts/{id}',
+      method: "DELETE",
+      path: "/contacts/{id}",
       handler: (request, h) => {
         const { id } = request.params;
-        const index = contacts.findIndex(contact => contact.id === Number(id));
+        const index = contacts.findIndex(
+          (contact) => contact.id === Number(id)
+        );
 
         if (index === -1) {
-          const response = h.response({ message: 'Contact not found' });
+          const response = h.response({ message: "Contact not found" });
           response.code(404);
           return response;
         }
 
         contacts.splice(index, 1);
 
-        return { message: 'Contact deleted successfully' };
+        return { message: "Contact deleted successfully" };
       },
     },
   ]);
 
   await server.start();
-  console.log('Server running on %s', server.info.uri);
+  console.log("Server running on %s", server.info.uri);
 })();

@@ -1,63 +1,49 @@
 const http = require("http");
 const contacts = require("./contacts");
 
-
 (async () => {
-  const server = http.createServer((request, response) => {
+  const server = http.createServer(async (request, response) => {
     response.setHeader("Content-Type", "application/json");
 
-    const { url } = request;
+    const { url, method } = request;
 
     if (url === "/contacts") {
-      const { method } = request;
-
       if (method === "POST") {
         let body = "";
-
         request.on("data", (chunk) => {
           body += chunk.toString();
         });
-
-        request.on("end", () => {
-          const { name, email, phone } = JSON.parse(body);
-          const id = contacts[contacts.length - 1].id + 1;
-          contacts.push({ id, name, email, phone });
-
-          response.statusCode = 201;
-          return response.end(
-            JSON.stringify({ message: "Contact added successfully" })
-          );
-        });
-      }
-
-      if (method === "GET") {
-        var tes = JSON.stringify(contacts);
-        console.log(tes);
+        await new Promise((resolve) => request.on("end", resolve));
+        const { name, email, phone } = JSON.parse(body);
+        const id = contacts.length + 1;
+        contacts.push({ id, name, email, phone });
+        response.statusCode = 201;
+        return response.end(
+          JSON.stringify({ message: "Contact added successfully" })
+        );
+      } else if (method === "GET") {
         return response.end(JSON.stringify(contacts));
+      } else {
+        response.statusCode = 403;
+        return response.end(JSON.stringify({ message: "Forbidden" }));
       }
     }
 
     if (url.startsWith("/contacts/")) {
-      const { method } = request;
-
-      if (method === "DELETE") {
-        const id = request.url.split("/")[2];
-        const user = contacts.find((user) => user.id === parseInt(id));
-
-        if (user) {
-          const index = contacts.indexOf(user);
-          contacts.splice(index, 1);
-
-          response.statusCode = 200;
-          return response.end(
-            JSON.stringify({ message: "Contact deleted successfully" })
-          );
-        }
-
-        response.statusCode = 404;
-        return response.end(JSON.stringify({ message: "Contact not found" }));
+      const id = parseInt(url.split("/")[2]);
+      const contactIndex = contacts.findIndex((contact) => contact.id === id);
+      const contact = contacts[contactIndex];
+      if (method === "DELETE" && contactIndex > -1) {
+        contacts.splice(contactIndex, 1);
+        response.statusCode = 200;
+        return response.end(
+          JSON.stringify({ message: "Contact deleted successfully" })
+        );
       }
     }
+
+    response.statusCode = 404;
+    return response.end(JSON.stringify({ message: "Endpoint not found" }));
   });
 
   server.listen(3000, "localhost", () => {
