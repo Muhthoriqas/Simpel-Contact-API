@@ -47,7 +47,7 @@ const runServerNative = async () => {
   });
 
   server.listen(3000, "localhost", () => {
-    console.log("Server running on http://localhost:3000");
+    console.log("Server running on http://localhost:3000/contacts");
   });
 };
 

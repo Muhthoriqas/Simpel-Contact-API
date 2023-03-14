@@ -5,8 +5,11 @@
   "main": "contacts.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "npx nodemon index.js"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Thoriq",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.21"
+  }
 }
