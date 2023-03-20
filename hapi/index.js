@@ -1,16 +1,16 @@
-const Hapi = require("@hapi/hapi");
-const contacts = require("./contacts");
+const Hapi = require('@hapi/hapi');
+const contacts = require('./contacts');
 
 const runServerHapi = async () => {
   const server = Hapi.server({
     port: 3000,
-    host: "localhost",
+    host: 'localhost',
   });
 
   server.route([
     {
-      method: "POST",
-      path: "/contacts",
+      method: 'POST',
+      path: '/contacts',
       handler: (request, h) => {
         const { name, email, phone } = request.payload;
         const id = contacts[contacts.length - 1].id + 1;
@@ -24,17 +24,17 @@ const runServerHapi = async () => {
 
         contacts.push(newContact);
 
-        return h.response({ message: "Contact added successfully" }).code(201);
+        return h.response({ message: 'Contact added successfully' }).code(201);
       },
     },
     {
-      method: "GET",
-      path: "/contacts",
+      method: 'GET',
+      path: '/contacts',
       handler: () => contacts,
     },
     {
-      method: "DELETE",
-      path: "/contacts/{id}",
+      method: 'DELETE',
+      path: '/contacts/{id}',
       handler: (request, h) => {
         const { id } = request.params;
         const index = contacts.findIndex(
@@ -42,18 +42,41 @@ const runServerHapi = async () => {
         );
 
         if (index === -1) {
-          return h.response({ message: "Contact not found" }).code(404);
+          return h.response({ message: 'Contact not found' }).code(404);
         }
 
         contacts.splice(index, 1);
 
-        return { message: "Contact deleted successfully" };
+        return { message: 'Contact deleted successfully' };
+      },
+    },
+    {
+      method: 'PUT',
+      path: '/contacts/{id}',
+      handler: (request, h) => {
+        const { id } = request.params;
+        const index = contacts.findIndex(
+          (contact) => contact.id === Number(id)
+        );
+        if (index === -1) {
+          return h.response({ message: 'Contact not found' }).code(404);
+        }
+        console.log(request);
+
+        const { name, email, phone } = request.payload;
+
+        contacts[index] = {
+          name,
+          email,
+          phone,
+        };
+        return { message: 'Contact edited successfully' };
       },
     },
   ]);
 
   await server.start();
-  console.log("Server running on %s/contacts", server.info.uri);
+  console.log('Server running on %s/contacts', server.info.uri);
 };
 
 runServerHapi();
